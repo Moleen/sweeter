@@ -1,4 +1,3 @@
-
 function toggle_like(post_id, type) {
   console.log(post_id, type);
   let $a_like = $(`#${post_id} a[aria-label='heart']`);
@@ -157,25 +156,27 @@ function num2str(count) {
 }
 
 function get_posts(username) {
-    if (username == undefined) {
-      username = "";
-    }
-    $("#post-box").empty();
-    $.ajax({
-      type: "GET",
-      url: `/get_posts?username_give=${username}`,
-      data: {},
-      success: function (response) {
-        if (response["result"] === "success") {
-          let posts = response["posts"];
-          for (let i = 0; i < posts.length; i++) {
-            let post = posts[i];
-            let time_post = new Date(post["date"]);
-            let time_before = time2str(time_post);
-            let class_heart = post["heart_by_me"] ? "fa-heart" : "fa-heart-o";
-            let class_star = post["star_by_me"] ? "fa-star" : "fa-star-o";
-            let class_thumbsup = post["thumbsup_by_me"] ? "fa-thumbs-up" : "fa-thumbs-o-up";
-            let html_temp = `<div class="box" id="${post["_id"]}">
+  if (username == undefined) {
+    username = "";
+  }
+  $("#post-box").empty();
+  $.ajax({
+    type: "GET",
+    url: `/get_posts?username_give=${username}`,
+    data: {},
+    success: function (response) {
+      if (response["result"] === "success") {
+        let posts = response["posts"];
+        for (let i = 0; i < posts.length; i++) {
+          let post = posts[i];
+          let time_post = new Date(post["date"]);
+          let time_before = time2str(time_post);
+          let class_heart = post["heart_by_me"] ? "fa-heart" : "fa-heart-o";
+          let class_star = post["star_by_me"] ? "fa-star" : "fa-star-o";
+          let class_thumbsup = post["thumbsup_by_me"]
+            ? "fa-thumbs-up"
+            : "fa-thumbs-o-up";
+          let html_temp = `<div class="box" id="${post["_id"]}">
                                           <article class="media">
                                               <div class="media-left">
                                                   <a class="image is-64x64" href="/user/${
@@ -191,9 +192,13 @@ function get_posts(username) {
                                                   <div class="content">
                                                       <p>
                                                           <strong>
-                                                          ${post["profile_name"]  }
+                                                          ${
+                                                            post["profile_name"]
+                                                          }
                                                           </strong> 
-                                                          <small>@${ post["username"] }</small>
+                                                          <small>@${
+                                                            post["username"]
+                                                          }</small>
                                                            <small>${time_before}</small>
                                                           <br>
                                                           ${post["comment"]}
@@ -201,26 +206,44 @@ function get_posts(username) {
                                                   </div>
                                                   <nav class="level is-mobile">
                                                       <div class="level-left">
-                                                          <a class="level-item is-sparta" aria-label="heart" onclick="toggle_like('${ post["_id"] }', 'heart')">
+                                                          <a class="level-item is-sparta" aria-label="heart" onclick="toggle_like('${
+                                                            post["_id"]
+                                                          }', 'heart')">
                                                               <span class="icon is-small">
                                                               <i class="fa ${class_heart}" aria-hidden="true"></i>
                                                               </span>
                                                               &nbsp;
-                                                              <span class="like-num">${num2str(post[   "count_heart"  ] )}</span>
+                                                              <span class="like-num">${num2str(
+                                                                post[
+                                                                  "count_heart"
+                                                                ]
+                                                              )}</span>
                                                           </a>
-                                                          <a class="level-item is-sparta" aria-label="star" onclick="toggle_star('${ post["_id"] }', 'star')">
+                                                          <a class="level-item is-sparta" aria-label="star" onclick="toggle_star('${
+                                                            post["_id"]
+                                                          }', 'star')">
                                                               <span class="icon is-small">
                                                               <i class="fa ${class_star}" aria-hidden="true"></i>
                                                               </span>
                                                               &nbsp;
-                                                              <span class="like-num">${num2str(post[   "count_star"  ] )}</span>
+                                                              <span class="like-num">${num2str(
+                                                                post[
+                                                                  "count_star"
+                                                                ]
+                                                              )}</span>
                                                           </a>
-                                                          <a class="level-item is-sparta" aria-label="thumbsup" onclick="toggle_thumbsup('${ post["_id"] }', 'thumbsup')">
+                                                          <a class="level-item is-sparta" aria-label="thumbsup" onclick="toggle_thumbsup('${
+                                                            post["_id"]
+                                                          }', 'thumbsup')">
                                                               <span class="icon is-small">
                                                               <i class="fa ${class_thumbsup}" aria-hidden="true"></i>
                                                               </span>
                                                               &nbsp;
-                                                              <span class="like-num">${num2str(post[   "count_thumbsup"  ] )}</span>
+                                                              <span class="like-num">${num2str(
+                                                                post[
+                                                                  "count_thumbsup"
+                                                                ]
+                                                              )}</span>
                                                           </a>
                                                       </div>
   
@@ -228,35 +251,46 @@ function get_posts(username) {
                                               </div>
                                           </article>
                                       </div>`;
-            $("#post-box").append(html_temp);
-          }
+          $("#post-box").append(html_temp);
         }
-      },
-    });
-  }
+      }
+    },
+  });
+}
 
 function update_profile() {
-    let name = $("#input-name").val();
-    let file = $("#input-pic")[0].files[0];
-    let about = $("#textarea-about").val();
-    let form_data = new FormData();
-    form_data.append("file_give", file);
-    form_data.append("name_give", name);
-    form_data.append("about_give", about);
-    console.log(name, file, about, form_data);
-  
-    $.ajax({
-      type: "POST",
-      url: "/update_profile",
-      data: form_data,
-      cache: false,
-      contentType: false,
-      processData: false,
-      success: function (response) {
-        if (response["result"] === "success") {
-          alert(response["msg"]);
+  let name = $("#input-name").val();
+  let file = $("#input-pic")[0].files[0];
+  let about = $("#textarea-about").val();
+  let form_data = new FormData();
+  form_data.append("file_give", file);
+  form_data.append("name_give", name);
+  form_data.append("about_give", about);
+  console.log(name, file, about, form_data);
+
+  $.ajax({
+    type: "POST",
+    url: "/update_profile",
+    data: form_data,
+    cache: false,
+    contentType: false,
+    processData: false,
+    success: function (response) {
+      if (response["result"] === "success") {
+        let timerInterval;
+        Swal.fire({
+          icon: "success",
+          text: response["msg"],
+          timer: 3000,
+          timerProgressBar: true,
+          showConfirmButton: false,
+          willClose: () => {
+            clearInterval(timerInterval);
+          },
+        }).then(function () {
           window.location.reload();
-        }
-      },
-    });
-  }
+        });
+      }
+    },
+  });
+}
